@@ -6,6 +6,7 @@ from db.bank_db import bank_balance
 
 db = read_db_config()
 
+
 def players_info(discord_id):
     try:
         conn = MySQLConnection(**db)
@@ -42,10 +43,10 @@ def remove_players(discord_id):
         if conn is not None and conn.is_connected():
             conn.close()
 
+
 class ScumPlayers(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -53,24 +54,22 @@ class ScumPlayers(commands.Cog):
             return
         if message.content.startswith("my_steam"):
             if message.channel.id == 925559937323659274:
-                
                 steam_id = players_info(message.author.id)
                 await message.reply(
-                    f"Your steam id : {steam_id[3]}",mention_author=False, delete_after=5
+                    f"Your steam id : {steam_id[3]}", mention_author=False, delete_after=5
                 )
                 await asyncio.sleep(6)
                 await message.delete()
-            if message.author.guild_permissions.administrator == True:
+            if message.author.guild_permissions.administrator:
                 steam_id = players_info(message.author.id)
                 await message.reply(
-                    f"Your steam id : {steam_id[3]}",mention_author=False, delete_after=5
+                    f"Your steam id : {steam_id[3]}", mention_author=False, delete_after=5
                 )
                 await asyncio.sleep(6)
                 await message.delete()
             else:
                 await message.reply('ให้ใช้งานคำสั่งที่ห้อง <#925559937323659274> เท่านั้น', mention_author=False)
                 await asyncio.sleep(3)
-        
 
     @commands.command(name="players_id")
     @commands.has_role('Admin')
@@ -94,10 +93,11 @@ class ScumPlayers(commands.Cog):
                 + f"\nSTEAM ID : {steam_id}"
                 + f"\nBANK ID : {bank_id}"
                 + f"\nCOINS : {coins}"
-                + f"\nLEVEL : {level}\n```", 
+                + f"\nLEVEL : {level}\n```",
                 mention_author=False
             )
-
+            await asyncio.sleep(5)
+            await ctx.message.delete()
 
     @commands.command(name="steam_out")
     async def steam_out(self, ctx, *, number):
@@ -108,28 +108,25 @@ class ScumPlayers(commands.Cog):
 
     @commands.command(name='status')
     async def setatus_command(self, ctx):
-        
+
         bank = bank_balance(ctx.author.id)
         coin = "${:,d}".format(bank[5])
         if ctx.channel.id == 925559937323659274:
 
             await ctx.reply(
                 content=f'Discord Name : {bank[1]}'
-                f'\nBank ID : {bank[4]}'
-                f'\nCoins : {coin}'
-                f'\nLevel : {bank[6]}'
-                f'\nExp : {bank[8]}',
+                        f'\nBank ID : {bank[4]}'
+                        f'\nCoins : {coin}'
+                        f'\nLevel : {bank[6]}'
+                        f'\nExp : {bank[8]}',
                 mention_author=False
-                )
+            )
         else:
             await ctx.reply(content='กรุณาพิมพ์คำสั่งที่ห้อง <#925559937323659274>', mention_author=False,
-                                delete_after=5)
+                            delete_after=5)
             await asyncio.sleep(5)
             await ctx.message.delete()
 
-
-
-    
 
 def setup(bot):
     bot.add_cog(ScumPlayers(bot))
